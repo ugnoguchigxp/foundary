@@ -1,0 +1,4 @@
+/target/
+*.webp
+.DS_Store
+

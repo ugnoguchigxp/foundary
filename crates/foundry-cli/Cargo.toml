@@ -1,0 +1,24 @@
+[package]
+name = "foundry-cli"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "foundry"
+path = "src/main.rs"
+
+[dependencies]
+clap.workspace = true
+foundry-core = { path = "../foundry-core" }
+foundry-image = { path = "../foundry-image" }
+serde = { workspace = true }
+serde_json.workspace = true
+
+[dev-dependencies]
+assert_cmd = "2"
+image.workspace = true
+predicates = "3"
+tempfile = "3"
+
