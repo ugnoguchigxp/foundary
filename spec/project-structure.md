@@ -62,11 +62,11 @@ CLI、worker、AdapterからCoreを利用する。Coreから個別機能には�
 | 画像・Office処理のRust実装 | Foundry workspaceへ集約 |
 | crate依存 | `[workspace.dependencies]`で共通宣言し、各crateで必要なものだけ利用 |
 | 依存解決 | リポジトリの`Cargo.lock`を管理し、CI・配布ビルドでは`--locked`を利用 |
-| ツールチェーン | stable系を採用し、配布時の具体的なバージョンを記録。固定・更新方法はworkspace作成時に確定 |
-| ビルド成果物 | Foundryのビルド環境に置き、利用プロジェクトには配置しない |
+| ツールチェーン | リポジトリの`foundry-rust.toml`と`rust-toolchain.toml`で要求を固定し、実体はrustupでユーザー単位に共有 |
+| ビルド成果物 | project・checkout・build unit・host tripleごとの外部targetへ隔離し、最終成果物は各プロジェクトが所有 |
 | インストール済みworker | CLIと同一リリース単位で管理 |
-| 他プロジェクトのRust依存や`target` | 一律に統合しない |
-| 開発環境全体のCargoキャッシュ | 別途検討。共有設定の変更は本計画で実施しない |
+| 他プロジェクトのRust依存や`target` | Cargo source cacheは共有するが、target内容は一律に統合しない |
+| 開発環境全体のCargoキャッシュ | `~/.cargo`のdownload cacheをCargoの排他制御で共有し、compile結果はsccacheで内容アドレス共有 |
 
 「一度構築する」はプロジェクトごとの再構築を避ける意味であり、更新やOS・CPUの違いによる再ビルドまで不要になるという意味ではない。
 

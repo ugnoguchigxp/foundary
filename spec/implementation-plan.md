@@ -1,12 +1,14 @@
 # Foundry 実装計画
 
-状態: 未着手。2026-09-21作成。
+状態: 画像MVPとRust共通ビルド環境の初期基盤を実装済み。2026-09-21更新。
 
 ## 1. 到達目標
 
 最初のリリースでは、プロジェクト外にインストールしたFoundryでJPG / PNGをWebP化できる状態を作る。次にmacOSのスクリーンショット保存から自動変換までを接続する。共通CLIの有効性を確認してから、外部AdapterとOfficeへ広げる。
 
-設計規約は[プロジェクト構成](project-structure.md)を正とする。本書は実装順序と完了判定を定める。現時点でコード、workspace、CI、Gitリポジトリは作成されていない。
+設計規約は[プロジェクト構成](project-structure.md)を正とする。本書は実装順序と完了判定を定める。画像MVP、workspace、CIに加え、複数のTauri / Rustリポジトリで利用する共通ビルド環境の初期基盤まで実装済みである。
+
+実装済みのRust環境基盤は`doctor rust`、`cache status`、`setup rust`、`env rust`、`run rust`で構成する。リポジトリの`foundry-rust.toml`を検証し、project、checkout、build unit、host tripleごとの外部targetを割り当て、RustとC/C++のコンパイルを共有sccacheへ接続する。グローバルCargo設定、Cargo.lock、Tauri設定、最終成果物は変更しない。
 
 ## 2. フェーズ0: 判断と検証素材
 
@@ -111,8 +113,15 @@ workspace作成後は次を実行する。
 
 各フェーズを独立してレビューできる変更単位にする。配布更新では公開CLIとworkerを混在させず、失敗時は直前のリリースへ戻せるようにする。自動変換に問題が出た場合はOS側の自動処理を解除し、手動CLIへ戻す。元画像を保持するため、変換済みファイルからの復元を前提にしない。
 
-## 10. 後回しにするもの
+## 10. Rust共通ビルド環境の次段階
 
-複数画像の一括指定、resize、その他画像形式、XML / JSON整形、Hash、汎用アーカイブ、完全なOffice validate、他OSの自動化、開発環境全体のRustキャッシュ統合は、最初の利用実績を確認して優先順位を決める。
+- profile manifestにtool version、SDK fingerprint、checksumを追加し、revision切替とrollbackをコマンド化する。
+- project key単位のtarget一覧、容量上限、限定pruneを追加する。全targetやCargo download cacheの一括削除は提供しない。
+- system native dependencyが実際に必要になった時点で、checksum付きimmutable prefixを一依存ずつ導入する。bundled SQLiteとlibwebpは強制的にsystem linkへ変えない。
+- macOS arm64以外はhost triple別の受入試験を追加してから対応済みとする。
+
+## 11. 後回しにするもの
+
+複数画像の一括指定、resize、その他画像形式、XML / JSON整形、Hash、汎用アーカイブ、完全なOffice validate、他OSの自動化は、最初の利用実績を確認して優先順位を決める。
 
 機能数ではなく、実際の複数プロジェクトでセットアップ回数、Agentの再試行数、処理時間、追加された依存が減ることを評価する。

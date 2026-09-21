@@ -1,0 +1,7 @@
+schema_version = 1
+project_id = "foundry"
+toolchain = "1.92.0"
+
+[[build_units]]
+id = "workspace"
+manifest_path = "Cargo.toml"
